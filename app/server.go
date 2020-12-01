@@ -191,22 +191,17 @@ func (s *Server) handleDelete(w http.ResponseWriter, r *http.Request) {
 }
 
 func (s *Server) handleSave(w http.ResponseWriter, r *http.Request) {
+	ip := r.FormValue("id")
+	name := r.FormValue("name")
+	phone := r.FormValue("phone")
 
-	//получаем данные из параметра запроса
-	idP := r.URL.Query().Get("id")
-	name := r.URL.Query().Get("name")
-	phone := r.URL.Query().Get("phone")
-
-	id, err := strconv.ParseInt(idP, 10, 64)
-	//если получили ошибку то отвечаем с ошибкой
+	id, err := strconv.Atoi(ip, 10, 64)
 	if err != nil {
-		//вызываем фукцию для ответа с ошибкой
 		errorWriter(w, http.StatusBadRequest, err)
 		return
 	}
 	//проверка на пустату
 	if name == "" && phone == "" {
-		//вызываем фукцию для ответа с ошибкой
 		errorWriter(w, http.StatusBadRequest, err)
 		return
 	}
@@ -219,46 +214,22 @@ func (s *Server) handleSave(w http.ResponseWriter, r *http.Request) {
 
 	customer, err := s.customerSvc.Save(r.Context(), item)
 
-	//если получили ошибку то отвечаем с ошибкой
 	if err != nil {
-		//вызываем фукцию для ответа с ошибкой
 		errorWriter(w, http.StatusInternalServerError, err)
 		return
 	}
-	//вызываем функцию для ответа в формате JSON
 	respondJSON(w, customer)
 }
 
-/*
-+
-+
-+
-+
-+
-+
-+
-*/
-//это фукция для записывание ошибки в responseWriter или просто для ответа с ошиками
 func errorWriter(w http.ResponseWriter, httpSts int, err error) {
-	//печатаем ошибку
 	log.Print(err)
 	http.Error(w, http.StatusText(httpSts), httpSts)
 }
-
-/*
-+
-+
-+
-*/
-//это функция для ответа в формате JSON
 func respondJSON(w http.ResponseWriter, iData interface{}) {
 
-	//преобразуем данные в JSON
 	data, err := json.Marshal(iData)
 
-	//если получили ошибку то отвечаем с ошибкой
 	if err != nil {
-		//вызываем фукцию для ответа с ошибкой
 		errorWriter(w, http.StatusInternalServerError, err)
 		return
 	}
@@ -266,7 +237,6 @@ func respondJSON(w http.ResponseWriter, iData interface{}) {
 	w.Header().Set("Content-Type", "application/json")
 	_, err = w.Write(data)
 	if err != nil {
-		//печатаем ошибку
 		log.Print(err)
 	}
 }
