@@ -195,7 +195,7 @@ func (s *Server) handleSave(w http.ResponseWriter, r *http.Request) {
 	name := r.FormValue("name")
 	phone := r.FormValue("phone")
 
-	id, err := strconv.Atoi(ip, 10, 64)
+	id, err := strconv.Atoi(ip)
 	if err != nil {
 		errorWriter(w, http.StatusBadRequest, err)
 		return
@@ -207,7 +207,7 @@ func (s *Server) handleSave(w http.ResponseWriter, r *http.Request) {
 	}
 
 	item := &customers.Customer{
-		ID:    id,
+		ID:    int64(id),
 		Name:  name,
 		Phone: phone,
 	}
